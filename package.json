@@ -1,0 +1,24 @@
+{
+  "name": "kamo",
+  "version": "0.1.0",
+  "description": "Bot developed for the Quacking Guild Discord `https://discord.gg/tBBZ8se`",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sychic/Kamo.git"
+  },
+  "author": "Sychic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sychic/Kamo/issues"
+  },
+  "homepage": "https://github.com/Sychic/Kamo#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0"
+  }
+}
