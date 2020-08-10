@@ -43,25 +43,29 @@ module.exports = function(username,message){
                                 .then(newrole=>{
                                     console.log(`Created Verified role for the ${message.guild.name}(${message.guild.id}) server!`)
                                     try {
-                                        message.member.roles.add(newrole)
+                                        message.member.roles.add(newrole,"Verification")
                                         .then(()=>{
-                                            let embed = new Discord.MessageEmbed()
-                                                .setDescription(`<a:verified:741883408728457257> You're all good to go!`)
-                                                .setColor("#1da1f2");
-                                            message.channel.send({embed});
-                                        })
+                                            message.member.setNickname(res.data.player.displayname,"Verification").then(()=>{
+                                                let embed = new Discord.MessageEmbed()
+                                                    .setDescription(`<a:verified:741883408728457257> You're all good to go!`)
+                                                    .setColor("#1da1f2");
+                                                message.channel.send({embed});
+                                            });
+                                        });
                                     } catch (error) {
                                         message.channel.send(`Unable to add role!`);
                                     }
                                 })
                             }else{
                                 try {
-                                    message.member.roles.add(role)
+                                    message.member.roles.add(role,"Verification")
                                     .then(()=>{
-                                        let embed = new Discord.MessageEmbed()
-                                            .setDescription(`<a:verified:741883408728457257> You're all good to go!`)
-                                            .setColor("#1da1f2");
-                                        message.channel.send({embed});
+                                        message.member.setNickname(res.data.player.displayname,"Verification").then(()=>{
+                                            let embed = new Discord.MessageEmbed()
+                                                .setDescription(`<a:verified:741883408728457257> You're all good to go!`)
+                                                .setColor("#1da1f2");
+                                            message.channel.send({embed});
+                                        });
                                     })
                                 } catch (error) {
                                     message.channel.send(`Unable to add role!`);

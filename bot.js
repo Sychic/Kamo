@@ -25,7 +25,7 @@ client.once('ready', () => {
 
 client.on("message",message=>{
 	if(message.author.bot) return;
-	if(message.guild&&channels.includes(message.channel.id)){
+	if(message.guild&&channels.includes(message.channel.id)&&message.member.roles.cache.find(role=>role.name=="Hypixel Verified")==undefined){
 		console.log(message.cleanContent);
 		verify(message.cleanContent,message);
 	}
