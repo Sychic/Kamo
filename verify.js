@@ -15,7 +15,8 @@ module.exports = function(username,message){
                     let media = (res.data.player.socialMedia==undefined||res.data.player.socialMedia.links==undefined) ? {"DISCORD" : "not linked"} : res.data.player.socialMedia.links;
                     if(media.DISCORD=="not linked"){
                         try {
-                            message.channel.send(`<@${message.author.id}>, there is no discord linked to that account!`)
+                            message.channel.send(`<@${message.author.id}>, there is no discord linked to that account!, link your discord by following this educational gif`);
+                            message.channel.send(`https://gfycat.com/dentaltemptingleonberger`);
                         } catch (error) {
                             console.error(`unable to send no linked media message`);
                         }
