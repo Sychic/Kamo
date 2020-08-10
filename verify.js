@@ -10,7 +10,7 @@ module.exports = function(username,message){
     axios.request({'url':'https://api.mojang.com/users/profiles/minecraft/'+username})
         .then(r=>{
             //fetch hypixel data to see linked discord account
-            axios.request({'url':`https://api.hypixel.net/player?key=1a8d8d01-19af-4fa0-8155-6e47c9c30388&uuid=${r.data.id}`})
+            axios.request({'url':`https://api.hypixel.net/player?key=${process.env.APIKEY}&uuid=${r.data.id}`})
                 .then(res=>{
                     let media = (res.data.player.socialMedia==undefined||res.data.player.socialMedia.links==undefined) ? {"DISCORD" : "not linked"} : res.data.player.socialMedia.links;
                     if(media.DISCORD=="not linked"){
