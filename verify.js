@@ -1,5 +1,5 @@
 const axios = require('axios');
-const bot = require('./bot.js');
+const mongo = require('./mongo.js');
 const Discord = require('discord.js');
 
 module.exports = function(username,message){
@@ -7,10 +7,10 @@ module.exports = function(username,message){
     username = username.replace(/\s/g, '');
     if(username.length>16) return message.channel.send("This isn't a valid username!");
     //gets minecraft uuid from mojang
-    axios.request({'url':'https://api.mojang.com/users/profiles/minecraft/'+username})
+    axios.get({'url':'https://api.mojang.com/users/profiles/minecraft/'+username})
         .then(r=>{
             //fetch hypixel data to see linked discord account
-            axios.request({'url':`https://api.hypixel.net/player?key=${process.env.APIKEY}&uuid=${r.data.id}`})
+            axios.get({'url':`https://api.hypixel.net/player?key=${process.env.APIKEY}&uuid=${r.data.id}`})
                 .then(res=>{
                     let media = (res.data.player.socialMedia==undefined||res.data.player.socialMedia.links==undefined) ? {"DISCORD" : "not linked"} : res.data.player.socialMedia.links;
                     if(media.DISCORD=="not linked"){
@@ -22,12 +22,12 @@ module.exports = function(username,message){
                         }
                     }else if(media.DISCORD==message.author.tag){
                         //query doc and check if it exists. If yes, then update it to match new uuid or create a new one if the doc doesn't exist
-                        bot.mongo.db('Users').collection('Users').findOne({Discord:message.author.id})
+                        mongo.db('Users').collection('Users').findOne({Discord:message.author.id})
                             .then(doc=>{
                                 if(doc==null){
-                                    bot.mongo.db('Users').collection('Users').insertOne({"Discord":message.author.id,"uuid":r.data.id});
+                                    mongo.db('Users').collection('Users').insertOne({"Discord":message.author.id,"uuid":r.data.id});
                                 }else{
-                                    bot.mongo.db('Users').collection('Users').updateOne({Discord:message.author.id},{$set:{"Discord":message.author.id,"uuid":r.data.id}});
+                                    mongo.db('Users').collection('Users').updateOne({Discord:message.author.id},{$set:{"Discord":message.author.id,"uuid":r.data.id}});
                                 }
                             })
                         //looks for Hypixel verified role. If doesn't exist, create one and add, otherwise add existing role
