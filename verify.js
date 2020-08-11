@@ -7,10 +7,10 @@ module.exports = function(username,message){
     username = username.replace(/\s/g, '');
     if(username.length>16) return message.channel.send("This isn't a valid username!");
     //gets minecraft uuid from mojang
-    axios.get({'url':'https://api.mojang.com/users/profiles/minecraft/'+username})
+    axios.request({'url':'https://api.mojang.com/users/profiles/minecraft/'+username})
         .then(r=>{
             //fetch hypixel data to see linked discord account
-            axios.get({'url':`https://api.hypixel.net/player?key=${process.env.APIKEY}&uuid=${r.data.id}`})
+            axios.request({'url':`https://api.hypixel.net/player?key=${process.env.APIKEY}&uuid=${r.data.id}`})
                 .then(res=>{
                     let media = (res.data.player.socialMedia==undefined||res.data.player.socialMedia.links==undefined) ? {"DISCORD" : "not linked"} : res.data.player.socialMedia.links;
                     if(media.DISCORD=="not linked"){
