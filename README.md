@@ -1,7 +1,7 @@
 # Kamo
 Bot developed for the Quacking Guild Discord
 
-https://discord.gg/tBBZ8se
+https://discord.gg/YmvuBCB
 
 ### Cloning and running locally
 > Prerequisites
