@@ -8,7 +8,9 @@ const channels = JSON.parse(process.env.CHANNEL);
 const client = new Discord.Client();
 
 client.once('ready', () => {
-	client.user.setActivity(`${client.users.cache.filter(user => !user.bot ).size} users`, { type: 'WATCHING' });
+	client.shard.fetchClientValues("users.cache").then(res=>{
+		client.user.setActivity(`${res[0].filter(user => !user.bot).length} users`, { type: 'WATCHING' });
+	})
 	console.log((`Mee6 overrated, dyno outdated, ${client.user.username}™ activated`).rainbow);
 });
 

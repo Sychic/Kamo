@@ -2,7 +2,7 @@
   "name": "kamo",
   "version": "1.0.0",
   "description": "Bot developed for the Quacking Guild Discord `https://discord.gg/tBBZ8se`",
-  "main": "bot.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
