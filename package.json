@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Sychic/Kamo#readme",
   "dependencies": {
     "axios": "^0.19.2",
-    "bl": "^4.0.3",
+    "bl": "^2.2.1",
     "colors": "^1.4.0",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
