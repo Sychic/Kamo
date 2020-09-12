@@ -29,12 +29,15 @@ client.once('ready', () => {
 
 client.on("message",message=>{
 	if(message.author.bot) return;
-	if(message.guild&&channels.includes(message.channel.id)&&message.member.roles.cache.find(role=>role.name=="Hypixel Verified")==undefined){
+	if(message.guild&&channels.includes(message.channel.id)/*will have to be replaced by per guild setting*/&&message.member.roles.cache.find(role=>role.name=="Hypixel Verified")==undefined){
 		console.log(message.cleanContent);
 		verify(message.cleanContent,message);
 	}
+	if(!message.content.startsWith(",")) return; //default prefix, will be replaced with per guild prefix
+	let command = client.commands.get(message.content.substring(1))||client.commands.find(cmd => cmd.aliases && channelsmd.aliases.includes(message.content.substring(1)));
+	console.log(command)
 	try {
-		client.commands.get(message.cleanContent).execute(message);
+		command.execute(message);
 	} catch (error) {
 		message.channel.send("This command doesn't exist or something else went wrong!");
 		console.error(error.message);
