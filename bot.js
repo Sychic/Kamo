@@ -34,8 +34,8 @@ client.on("message",message=>{
 		verify(message.cleanContent,message);
 	}
 	if(!message.content.startsWith(",")) return; //default prefix, will be replaced with per guild prefix
-	let command = client.commands.get(message.content.substring(1))||client.commands.find(cmd => cmd.aliases && channelsmd.aliases.includes(message.content.substring(1)));
-	console.log(command)
+	let command = client.commands.get(message.content.substring(1))||client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(message.content.substring(1)));
+	if(!(command.guildOnly&&message.guild))return;
 	try {
 		command.execute(message);
 	} catch (error) {

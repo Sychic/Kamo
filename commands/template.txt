@@ -1,0 +1,9 @@
+module.exports = {
+    name: "Name",
+    aliases: ["Alias"],
+    guildOnly: true,
+    execute (message) {
+        //Code here...
+
+    }
+}
