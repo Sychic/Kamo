@@ -5,7 +5,7 @@ global.colors = require("colors");
 const verify = require('./verify.js');
 const channels = JSON.parse(process.env.CHANNEL);
 
-const client = new Discord.Client();
+const client = new Discord.Client({ ws : { intents : ['GUILDS','GUILD_MESSAGES','GUILD_MEMBERS']}});
 
 client.commands = new Discord.Collection();
 
