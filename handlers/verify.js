@@ -1,5 +1,5 @@
 const axios = require('axios');
-const mongo = require('./mongo.js');
+const mongo = require('../mongo.js');
 const Discord = require('discord.js');
 
 module.exports = function(username,message){
@@ -61,12 +61,16 @@ module.exports = function(username,message){
                                 try {
                                     message.member.roles.add(role,"Verification")
                                     .then(()=>{
-                                        message.member.setNickname(res.data.player.displayname,"Verification").then(()=>{
-                                            let embed = new Discord.MessageEmbed()
-                                                .setDescription(`<a:verified:741883408728457257> You're all good to go!`)
-                                                .setColor("#1da1f2");
-                                            message.channel.send({embed});
-                                        });
+                                        try {
+                                            message.member.setNickname(res.data.player.displayname,"Verification").then(()=>{
+                                                let embed = new Discord.MessageEmbed()
+                                                    .setDescription(`<a:verified:741883408728457257> You're all good to go!`)
+                                                    .setColor("#1da1f2");
+                                                message.channel.send({embed});
+                                            });
+                                        } catch(error) {
+                                            console.error("Missing change nickname permissions");
+                                        }
                                     })
                                 } catch (error) {
                                     message.channel.send(`Unable to add role!`);
@@ -76,6 +80,15 @@ module.exports = function(username,message){
                         } catch (error) {
                             console.error(`channel not found`);
                             console.error(error);
+                        }
+                        // Looks for unverified role and tries to remove it
+                        try {
+                            let unverified = message.member.roles.cache.find(role=>role.name=="Unverified");
+                            message.member.roles.remove(unverified, "Verification");
+                        } catch (error) {
+                            console.error("Error while remove unverified role!");
+                            console.error(error);
+                            message.reply("Please contact staff as there was an error!");
                         }
                     }else{
                         try {

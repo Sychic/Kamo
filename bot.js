@@ -2,7 +2,10 @@ require('dotenv').config({path:__dirname+'/.env'})
 const fs = require('fs');
 const Discord = require('discord.js');
 global.colors = require("colors");
-const verify = require('./verify.js');
+const verify = require('./handlers/verify.js');
+const join = require('./handlers/join.js');
+const ban = require('./handlers/ban.js');
+
 const channels = JSON.parse(process.env.CHANNEL);
 
 const client = new Discord.Client({ ws : { intents : ['GUILDS','GUILD_MESSAGES','GUILD_MEMBERS']}});
@@ -21,11 +24,13 @@ for(dir in dirlist){
 }
 
 client.once('ready', () => {
-	client.shard.fetchClientValues("users.cache").then(res=>{
-		client.user.setActivity(`${res[0].filter(user => !user.bot).length} users`, { type: 'WATCHING' });
-	})
+	client.user.setActivity(`dog`, { type: 'WATCHING' });
 	console.log((`Mee6 overrated, dyno outdated, ${client.user.username}™ activated`).rainbow);
 });
+
+client.on("guildMemberAdd", member  => {
+	join(member);
+})
 
 client.on("message",message=>{
 	if(message.author.bot) return;
