@@ -4,7 +4,6 @@ const Discord = require('discord.js');
 global.colors = require("colors");
 const verify = require('./handlers/verify.js');
 const join = require('./handlers/join.js');
-const ban = require('./handlers/ban.js');
 
 const channels = JSON.parse(process.env.CHANNEL);
 
