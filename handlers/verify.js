@@ -9,6 +9,13 @@ module.exports = function(username,message){
     //gets minecraft uuid from mojang
     axios.request({'url':'https://api.mojang.com/users/profiles/minecraft/'+username})
         .then(r=>{
+            //query ban doc and check if it exists
+            mongo.db(`Users`).collection(`Bans`).findOne({uuid:r.data.id})
+            .then(banDoc => {
+                if(banDoc != null){
+                    return message.member.ban({reason : `You are UUID banned from Quacking`});
+                }
+            })
             //fetch hypixel data to see linked discord account
             axios.request({'url':`https://api.hypixel.net/player?key=${process.env.APIKEY}&uuid=${r.data.id}`})
                 .then(res=>{
@@ -21,6 +28,7 @@ module.exports = function(username,message){
                             console.error(`unable to send no linked media message`);
                         }
                     }else if(media.DISCORD==message.author.tag){
+                        
                         //query doc and check if it exists. If yes, then update it to match new uuid or create a new one if the doc doesn't exist
                         mongo.db('Users').collection('Users').findOne({Discord:message.author.id})
                             .then(doc=>{
