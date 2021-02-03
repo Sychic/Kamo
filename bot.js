@@ -14,13 +14,9 @@ client.commands = new Discord.Collection();
 let dirlist = fs.readdirSync('./commands',{ withFileTypes: true })
 	.filter(dirent => dirent.isDirectory())
 	.map(dirent => dirent.name);
-// for (dir in dirlist) {
-// 	console.log(dirlist);
-// }
 for(dir in dirlist){
 	let files = fs.readdirSync(`./commands/${dirlist[dir]}/`).filter(file=>file.endsWith(".js"));
 	for(file in files){
-		// console.log(files);
 		let command = require(`./commands/${dirlist[dir]}/${files[file]}`);
 		client.commands.set(command.name,command);
 	}
@@ -42,9 +38,9 @@ client.on("message",message=>{
 		verify(message.cleanContent,message);
 	}
 	if(!message.content.startsWith(",")) return; //default prefix, will be replaced with per guild prefix
-	let command = client.commands.get(message.content.substring(1, message.content.indexOf(" ")))||client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(message.content.substring(1,message.content.indexOf(" "))));
-	console.log(command.name);
-	// if(!(command.guildOnly&&message.guild))return;
+	let first = message.content.slice(1, (message.content.includes(" ")) ? message.content.indexOf(" ") : message.content.length);
+	let command = client.commands.get(first)||client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(first));
+	if(!(command.guildOnly&&message.guild))return;
 	try {
 		command.execute(message);
 	} catch (error) {
