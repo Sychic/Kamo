@@ -5,7 +5,7 @@ module.exports = {
     aliases: ["uban"],
     guildOnly: true,
     execute (message) {
-        let targetMember = message.mentions.members.first();
+        let targetMember = message.mentions.users.first();
         if(!targetMember) return message.reply('you need to tag a user!');
         message.reply(targetMember);
             ban(message, targetMember);
