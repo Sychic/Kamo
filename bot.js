@@ -35,6 +35,9 @@ client.once('ready', () => {
 	client.user.setActivity(`dog`, {
 		type: 'WATCHING'
 	});
+	client.setTimeout(() => {
+		rolesync(client);
+	}, 300000);
 	console.log((`Mee6 overrated, dyno outdated, ${client.user.username}™ activated`).rainbow);
 });
 
