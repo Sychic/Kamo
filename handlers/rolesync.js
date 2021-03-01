@@ -14,8 +14,9 @@ module.exports = async (client) => {
     mongo.db("users").collection("Users").find().forEach(async ({Discord, uuid}) => {
         const member = guild.member(Discord);
         if (!member) continue;
+        if (!member.roles.cache.some(role => role.name === "Floating")) continue;
         let player = guildData.guild.members.find(p => p.uuid === uuid.replace("-", ""));
-        if (!player && !member.roles.cache.some(role => role.name === "Floating")) {
+        if (!player) {
             roles.forEach(role => {
                 if (member.roles.cache.has(role.id)) member.roles.remove(role);
             });
