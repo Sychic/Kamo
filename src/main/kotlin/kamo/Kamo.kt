@@ -1,17 +1,18 @@
 package kamo
 
-import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.mongodb.ConnectionString
+import dev.kord.cache.api.count
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.core.Kord
+import dev.kord.core.cache.data.GuildData
+import dev.kord.core.cache.data.UserData
 import dev.kord.gateway.Intents
 import dev.kord.gateway.PrivilegedIntent
-import kamo.modules.JoinModule
-import kamo.modules.PresenceModule
-import kamo.modules.VerifyModule
+import kamo.modules.Module
+import kamo.modules.impl.JoinModule
+import kamo.modules.impl.VerifyModule
 import org.litote.kmongo.coroutine.CoroutineClient
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 import skytils.hylin.HylinAPI
 import skytils.hylin.HylinAPI.Companion.createHylinAPI
@@ -38,37 +39,33 @@ suspend fun main(args: Array<String>) {
 }
 
 object Kamo {
-    lateinit var client: ExtensibleBot
+    lateinit var client: Kord
     lateinit var mongo: CoroutineClient
     lateinit var hylin: HylinAPI
+    private val modules: MutableList<Module> = mutableListOf()
 
     @OptIn(PrivilegedIntent::class)
     suspend fun init(discordToken: String, mongoURL: String, apiKey: String) {
         mongo = KMongo.createClient(ConnectionString(mongoURL)).coroutine
-        client = ExtensibleBot(discordToken) {
-            chatCommands {
-                enabled = true
-            }
-            
-            intents {
-                +Intents.all
-            }
+        client = Kord(discordToken)
+        hylin = client.createHylinAPI(apiKey)
 
-            presence {
-                status = PresenceStatus.Idle
-                competing("hi")
-            }
+        modules.add(VerifyModule)
+        modules.add(JoinModule)
 
-            extensions {
-                add { JoinModule }
-                add { PresenceModule }
-                add { VerifyModule }
-            }
-
+        modules.forEach {
+            it.setup()
         }
-        hylin = client.getKoin().get<Kord>().createHylinAPI(apiKey)
 
-        client.start()
+        client.login {
+            presence {
+                val users = client.cache.count<UserData>()
+                val guilds = client.cache.count<GuildData>()
+                status = PresenceStatus.Online
+                watching("$users users and $guilds guilds")
+            }
+            intents = Intents.all
+        }
 
 
     }

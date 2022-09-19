@@ -23,17 +23,16 @@ repositories {
 dependencies {
     val kordVersion: String by project
     implementation("dev.kord:kord-core:$kordVersion")
-    val kordexVersion: String by project
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:$kordexVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.18.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    implementation("com.google.code.gson:gson:2.9.1")
     val kmongoVersion: String by project
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongoVersion")
     val hylinVersion: String by project
     implementation("com.github.skytils:hylin:$hylinVersion")
-    implementation("org.apache.httpcomponents:httpclient:4.3.3")
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.1.3")
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
