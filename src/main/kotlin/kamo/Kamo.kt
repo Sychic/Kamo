@@ -1,6 +1,7 @@
 package kamo
 
 import com.mongodb.ConnectionString
+import com.mongodb.kotlin.client.coroutine.MongoClient
 import dev.kord.cache.api.count
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.core.Kord
@@ -11,9 +12,6 @@ import dev.kord.gateway.PrivilegedIntent
 import kamo.modules.Module
 import kamo.modules.impl.JoinModule
 import kamo.modules.impl.VerifyModule
-import org.litote.kmongo.coroutine.CoroutineClient
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
 import skytils.hylin.HylinAPI
 import skytils.hylin.HylinAPI.Companion.createHylinAPI
 import java.util.*
@@ -40,13 +38,13 @@ suspend fun main(args: Array<String>) {
 
 object Kamo {
     lateinit var client: Kord
-    lateinit var mongo: CoroutineClient
+    lateinit var mongo: MongoClient
     lateinit var hylin: HylinAPI
     private val modules: MutableList<Module> = mutableListOf()
 
     @OptIn(PrivilegedIntent::class)
     suspend fun init(discordToken: String, mongoURL: String, apiKey: String) {
-        mongo = KMongo.createClient(ConnectionString(mongoURL)).coroutine
+        mongo = MongoClient.create(ConnectionString(mongoURL))
         client = Kord(discordToken)
         hylin = client.createHylinAPI(apiKey)
 

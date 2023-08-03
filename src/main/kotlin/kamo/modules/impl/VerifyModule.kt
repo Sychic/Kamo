@@ -1,5 +1,7 @@
 package kamo.modules.impl
 
+import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.Updates
 import dev.kord.common.Color
 import dev.kord.core.behavior.createRole
 import dev.kord.core.behavior.edit
@@ -15,19 +17,18 @@ import kamo.Kamo
 import kamo.modules.Module
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.Serializable
-import org.litote.kmongo.eq
 import skytils.hylin.extension.nonDashedString
 
 object VerifyModule : Module() {
     override val name: String = "verification"
-    private val usernameRegex = Regex("^\\w{3,16}\$")
+    private val usernameRegex = Regex("^[\\w]{3,16}\$")
     private val userCollection = Kamo.mongo.getDatabase("Users").getCollection<Obj>("Users")
 
     override suspend fun setup() {
         kord.on<MessageCreateEvent> {
             if (this.message.author?.isBot == true) return@on
             if (message.getChannel().data.name.value?.contains("verify", ignoreCase = true) == false) return@on
-            if (message.getAuthorAsMember()?.roles?.firstOrNull { it.name == "Unverified" } == null) return@on
+            if (message.getAuthorAsMemberOrNull()?.roles?.firstOrNull { it.name == "Unverified" } == null) return@on
             message.author?.let { verify(message, message.content, it) }
         }
     }
@@ -49,10 +50,10 @@ object VerifyModule : Module() {
                 if (discord != user.tag) {
                     message.reply {
                         embed {
-                            description = "<:error:741896426052648981> Your discord doesn't match the linked one (${discord ?: "None Linked"})!\n" +
-                                    "Please follow the gif below to link your discord!"
+                            description = "<:error:741896426052648981> Your discord doesn't match the linked one (${discord ?: "None Linked"})!"
                             color = Color(0xff0033)
                             if (discord == null) {
+                                description+= "\nPlease follow the gif below to link your discord!"
                                 image = "https://i.giphy.com/H98mSLt6J9F2hgqHEa.gif"
                             }
                         }
@@ -60,13 +61,14 @@ object VerifyModule : Module() {
                 } else {
                     // update mongo
                     userCollection
-                        .findOne(Obj::discord eq user.id.toString())?.let {
-                            userCollection.updateOne(Obj::discord eq user.id.toString(), Obj(user.id.toString(), player.uuid.nonDashedString()))
-                        } ?: userCollection.insertOne(Obj(user.id.toString(), player.uuid.nonDashedString()))
+                        .findOneAndUpdate(
+                            filter = eq("discord", user.id.toString()),
+                            Updates.set("uuid", player.uuid.nonDashedString())
+                        ) ?: userCollection.insertOne(Obj(user.id.toString(), player.uuid.nonDashedString()))
                     var success = true
                     // change nickname
                     try {
-                        message.getAuthorAsMember()?.edit {
+                        message.getAuthorAsMemberOrNull()?.edit {
                             nickname = player.name
                             reason = "Verification"
                         } ?: message.reply {
@@ -123,14 +125,14 @@ object VerifyModule : Module() {
 
     private suspend fun addVerifiedRole(role: Role, message: Message, success: Boolean) {
         try {
-            message.getAuthorAsMember()?.addRole(role.id, "Verification") ?: message.reply {
+            message.getAuthorAsMemberOrNull()?.addRole(role.id, "Verification") ?: message.reply {
                 embed {
                     description = "<:error:741896426052648981> Something went wrong!"
                     color = Color(0xff0033)
                 }
             }
             message.getGuild().roles.firstOrNull { it.name == "Unverified" }?.let { unv ->
-                message.getAuthorAsMember()?.removeRole(unv.id, "Verification") ?: message.reply {
+                message.getAuthorAsMemberOrNull()?.removeRole(unv.id, "Verification") ?: message.reply {
                     embed {
                         description = "<:error:741896426052648981> Something went wrong!"
                         color = Color(0xff0033)

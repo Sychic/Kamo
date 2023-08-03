@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.serialization") version "1.8.21"
 }
 
 group = "kamo"
@@ -23,14 +23,14 @@ repositories {
 dependencies {
     val kordVersion: String by project
     implementation("dev.kord:kord-core:$kordVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.18.0")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
     implementation("com.google.code.gson:gson:2.9.1")
-    val kmongoVersion: String by project
-    implementation("org.litote.kmongo:kmongo-coroutine:$kmongoVersion")
+    val mongoKotlinVersion: String by project
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$mongoKotlinVersion")
     val hylinVersion: String by project
     implementation("com.github.skytils:hylin:$hylinVersion")
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.1.3")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
 }
 
 tasks.withType<KotlinCompile> {

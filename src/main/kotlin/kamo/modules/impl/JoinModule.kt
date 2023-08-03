@@ -13,7 +13,7 @@ object JoinModule: Module() {
 
     override suspend fun setup() {
         kord.on<MemberJoinEvent> {
-            if (this.member.isBot == true) return@on
+            if (this.member.isBot) return@on
             member.addRole(guild.findOrCreateRole("Unverified").id, "Auto unverified")
         }
     }
