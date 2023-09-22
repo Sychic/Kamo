@@ -31,8 +31,16 @@ dependencies {
     val hylinVersion: String by project
     implementation("com.github.skytils:hylin:$hylinVersion")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
+    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.kotest:kotest-assertions-core:5.7.2")
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
