@@ -19,6 +19,7 @@ import java.time.Instant
 object DeviceCodeFlow {
     private const val TENANT = "consumers"
     private const val CLIENT_ID = "5f9ac917-1d6b-48eb-9b42-70916b21ef6a"
+    private const val SCOPE = "XboxLive.signin offline_access"
     private val json = Json {
         isLenient = true
         ignoreUnknownKeys = true
@@ -42,7 +43,7 @@ object DeviceCodeFlow {
                 FormDataContent(
                     parameters {
                         append("client_id", CLIENT_ID)
-                        append("scope", "XboxLive.offline_access")
+                        append("scope", SCOPE)
                     }
                 )
             )
@@ -106,6 +107,7 @@ object DeviceCodeFlow {
                         append("cliend_id", CLIENT_ID)
                         append("grant_type", "refresh_token")
                         append("refresh_token", data.refresh_token)
+                        append("scope", SCOPE)
                     }
                 )
             )
