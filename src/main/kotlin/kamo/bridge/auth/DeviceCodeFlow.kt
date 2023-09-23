@@ -91,6 +91,26 @@ object DeviceCodeFlow {
             )
         }.body<JsonObject>()
 
+    suspend fun refreshAccessToken(data: UserAuthData) =
+        httpClient.post {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "login.microsoftonline.com"
+                path(TENANT, "oauth2", "v2.0", "token")
+            }
+            contentType(ContentType.Application.FormUrlEncoded)
+
+            setBody(
+                FormDataContent(
+                    parameters {
+                        append("cliend_id", CLIENT_ID)
+                        append("grant_type", "refresh_token")
+                        append("refresh_token", data.refresh_token)
+                    }
+                )
+            )
+        }.body<UserAuthData>()
+
     @Serializable
     data class DeviceCodeData(
         val user_code: String,
