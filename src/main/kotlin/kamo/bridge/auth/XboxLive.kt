@@ -3,7 +3,7 @@ package kamo.bridge.auth
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kamo.bridge.auth.Auth.httpClient
+import kamo.Kamo.httpClient
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.*
 

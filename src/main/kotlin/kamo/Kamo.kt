@@ -9,9 +9,13 @@ import dev.kord.core.cache.data.GuildData
 import dev.kord.core.cache.data.UserData
 import dev.kord.gateway.Intents
 import dev.kord.gateway.PrivilegedIntent
+import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import kamo.modules.Module
 import kamo.modules.impl.JoinModule
 import kamo.modules.impl.VerifyModule
+import kotlinx.serialization.json.Json
 import skytils.hylin.HylinAPI
 import skytils.hylin.HylinAPI.Companion.createHylinAPI
 import java.util.*
@@ -40,6 +44,15 @@ object Kamo {
     lateinit var client: Kord
     lateinit var mongo: MongoClient
     lateinit var hylin: HylinAPI
+    val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
+    val httpClient = HttpClient {
+        install(ContentNegotiation) {
+            json(json)
+        }
+    }
     private val modules: MutableList<Module> = mutableListOf()
 
     @OptIn(PrivilegedIntent::class)

@@ -4,11 +4,11 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import kamo.Kamo.httpClient
+import kamo.Kamo.json
 import kamo.bridge.auth.Auth.CLIENT_ID
 import kamo.bridge.auth.Auth.SCOPE
 import kamo.bridge.auth.Auth.TENANT
-import kamo.bridge.auth.Auth.httpClient
-import kamo.bridge.auth.Auth.json
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
