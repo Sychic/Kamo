@@ -1,10 +1,7 @@
 package kamo
 
 import io.kotest.matchers.shouldBe
-import kamo.bridge.auth.authorizeDevice
-import kamo.bridge.auth.obtainXBLToken
-import kamo.bridge.auth.obtainXSTSToken
-import kamo.bridge.auth.pollUserAuth
+import kamo.bridge.auth.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -46,5 +43,19 @@ object Oauth {
         println(xblData)
         val xstsData = obtainXSTSToken(xblData)
         println(xstsData)
+    }
+
+    @Test
+    fun testMc() = runBlocking {
+        val data = authorizeDevice()
+        println(data.message)
+        val authData = pollUserAuth(data)
+        println(authData)
+        val xblData = obtainXBLToken(authData.access_token)
+        println(xblData)
+        val xstsData = obtainXSTSToken(xblData)
+        println(xstsData)
+        val mcdata = obtainMCToken(xstsData)
+        println(mcdata)
     }
 }
