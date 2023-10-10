@@ -4,6 +4,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kamo.bridge.auth.Auth.httpClient
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -25,7 +26,8 @@ suspend fun obtainMCToken(xstsToken: XSTSToken) =
 
 @Serializable
 data class MCTokenData(
-    val username: String,
+    @SerialName("username")
+    val uuid: String,
     val access_token: String,
     val token_type: String
 )
