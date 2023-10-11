@@ -2,11 +2,10 @@ package kamo
 
 import com.mongodb.ConnectionString
 import com.mongodb.kotlin.client.coroutine.MongoClient
-import dev.kord.cache.api.count
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.core.Kord
-import dev.kord.core.cache.data.GuildData
-import dev.kord.core.cache.data.UserData
+import dev.kord.core.event.gateway.ReadyEvent
+import dev.kord.core.on
 import dev.kord.gateway.Intents
 import dev.kord.gateway.PrivilegedIntent
 import io.ktor.client.*
@@ -68,12 +67,15 @@ object Kamo {
             it.setup()
         }
 
+        client.on<ReadyEvent> {
+            client.editPresence {
+                watching("${guilds.size} guilds")
+            }
+        }
+
         client.login {
             presence {
-                val users = client.cache.count<UserData>()
-                val guilds = client.cache.count<GuildData>()
                 status = PresenceStatus.Online
-                watching("$users users and $guilds guilds")
             }
             intents = Intents.all
         }
