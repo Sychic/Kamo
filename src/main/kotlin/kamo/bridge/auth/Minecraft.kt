@@ -22,7 +22,7 @@ suspend fun obtainMCToken(xstsToken: XSTSToken) =
                 "identityToken" to JsonPrimitive("XBL3.0 x=${xstsToken.userHash};${xstsToken.token}")
             ))
         )
-    }.body<JsonObject>()
+    }.body<MCTokenData>()
 
 @Serializable
 data class MCTokenData(
