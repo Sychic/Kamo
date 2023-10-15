@@ -79,7 +79,7 @@ suspend fun checkUserAuth(data: DeviceCodeData) =
         )
     }.body<JsonObject>()
 
-suspend fun refreshAccessToken(data: UserAuthData) =
+suspend fun refreshAccessToken(refresh_token: String) =
     httpClient.post {
         url {
             protocol = URLProtocol.HTTPS
@@ -93,7 +93,7 @@ suspend fun refreshAccessToken(data: UserAuthData) =
                 parameters {
                     append("cliend_id", CLIENT_ID)
                     append("grant_type", "refresh_token")
-                    append("refresh_token", data.refresh_token)
+                    append("refresh_token", refresh_token)
                     append("scope", SCOPE)
                 }
             )
