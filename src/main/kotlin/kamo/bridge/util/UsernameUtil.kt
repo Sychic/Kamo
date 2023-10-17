@@ -10,7 +10,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.util.UUID
 
 object UsernameUtil {
-    val cache = mutableMapOf<String, String>()
+    val cache = mutableMapOf<String, String>(
+        "danika99" to "ef971e27efb0420480f36ac7984334ce"
+    )
 
     suspend fun getUsername(uuid: String) =
         httpClient.get {
