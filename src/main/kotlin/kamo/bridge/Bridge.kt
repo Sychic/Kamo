@@ -124,7 +124,7 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
                 if (packet.message.unformattedText.contains(profile.name)) return
                 println(packet.message.unformattedText)
                 BridgeModule.launch {
-                    messageFlow.emit(McMessage((packet.message.unformattedText)))
+                    messageFlow.emit(McMessage(packet.message.unformattedText))
                 }
             }
         }
