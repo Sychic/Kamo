@@ -26,7 +26,7 @@ suspend fun obtainMCToken(xstsToken: XSTSToken) =
         )
     }.body<MCTokenData>()
 
-suspend fun getMCProfile(access_token: String) =
+suspend fun requestMcProfile(access_token: String) =
     httpClient.get {
         url {
             protocol = URLProtocol.HTTPS
@@ -34,7 +34,10 @@ suspend fun getMCProfile(access_token: String) =
             path("minecraft", "profile")
         }
         bearerAuth(access_token)
-    }.body<MCProfileData>()
+    }
+
+suspend fun getMCProfile(access_token: String) =
+    requestMcProfile(access_token).body<MCProfileData>()
 
 @Serializable
 data class MCTokenData(
