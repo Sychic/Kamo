@@ -28,7 +28,7 @@ jobs:
           key: ${{secrets.KEY}}
           port: ${{secrets.PORT}}
           uploads: |
-            ./build/distributions/ => /opt/kamo/
+            ./build/distributions/Kamo-0.0.1.zip => /opt/kamo/
       - name: Unzip and deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
