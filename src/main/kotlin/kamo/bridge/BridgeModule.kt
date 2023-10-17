@@ -12,10 +12,7 @@ import dev.kord.rest.builder.message.create.embed
 import io.ktor.http.*
 import kamo.Kamo
 import kamo.bridge.auth.*
-import kamo.bridge.util.DiscordMessage
-import kamo.bridge.util.McMessage
-import kamo.bridge.util.Message
-import kamo.bridge.util.UsernameUtil
+import kamo.bridge.util.*
 import kamo.commands.CommandManager
 import kamo.modules.Module
 import kamo.properties
@@ -55,7 +52,8 @@ object BridgeModule : Module(), CoroutineScope {
             if (message.author?.isBot == true) return@on
             coroutineScope {
                 launch {
-                    messageFlow.emit(DiscordMessage(message.getAuthorAsMemberOrNull()!!.effectiveName, message.content))
+                    val channel = if (message.channelId == officerChannel) Channel.OFFICER else Channel.GUILD
+                    messageFlow.emit(DiscordMessage(message.getAuthorAsMemberOrNull()!!.effectiveName, message.content, channel))
                 }
             }
         }
