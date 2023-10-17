@@ -31,7 +31,7 @@ object BridgeModule : Module(), CoroutineScope {
     val officerChannel = Snowflake(721227990528163900)
 
     /*formatted: §r§[23](Guild|Officer) > §.(\[(?:MVP|VIP)§.\+§.\])? [\w\d_]+ (?:§e\[\w*\])?§f: §r(\w)+*/
-    val regex = Regex("(?<channel>Guild|Officer) > \\[?(?<rank>MVP\\+?|VIP\\+?)?\\]? (?<username>[\\w\\d_]{3,16}) (?:\\[\\w+\\])?: (?<content>[\\w ]+)")
+    val regex = Regex("(?<channel>Guild|Officer) > \\[?(?<rank>MVP\\+?|VIP\\+?)?\\]? (?<username>[\\w\\d_]{3,16}) (?:\\[\\w+\\])?: (?<content>.+)")
 
     var bridge: Bridge? = null
         set(value) {
