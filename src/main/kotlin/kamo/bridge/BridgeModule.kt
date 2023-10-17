@@ -42,7 +42,7 @@ object BridgeModule : Module(), CoroutineScope {
                 kord.launch {
                     bridge.setup()
                     kord.getChannelOf<MessageChannel>(guildChannel)?.createMessage { content = "Starting!" }
-                    messageFlow.asSharedFlow().filterIsInstance<McMessage>().onEach(::onMessage).launchIn(this + Job())
+                    messageFlow.asSharedFlow().filterIsInstance<McMessage>().onEach(::onMessage).launchIn(this + SupervisorJob())
                 }
             }
         }
