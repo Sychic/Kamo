@@ -91,7 +91,7 @@ suspend fun refreshAccessToken(refresh_token: String) =
         setBody(
             FormDataContent(
                 parameters {
-                    append("cliend_id", CLIENT_ID)
+                    append("client_id", CLIENT_ID)
                     append("grant_type", "refresh_token")
                     append("refresh_token", refresh_token)
                     append("scope", SCOPE)
