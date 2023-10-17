@@ -85,23 +85,19 @@ object BridgeModule : Module(), CoroutineScope {
     }
 
     suspend fun onMessage(mcMessage: McMessage) {
-        val unformatted = mcMessage.content.replace(colorRegex, "")
-        regex.find(unformatted)?.groups?.let { groups ->
-            val channel = if (groups["channel"]?.value == "Officer") officerChannel else guildChannel
-            kord.getChannelOf<MessageChannel>(channel)?.createMessage {
-                embed {
-                    color = when(groups["rank"]?.value) {
-                        "MVP++" -> Color(0xffaa00)
-                        "MVP+" -> Color(0x5555ff)
-                        "MVP" -> Color(0x55ffff)
-                        "VIP+" -> Color(0x00aa00)
-                        "VIP" -> Color(0x55ff55)
-                        else -> Color(0xaaaaaa)
-                    }
-                    author {
-                        name = "${groups["username"]!!.value}: ${groups["content"]?.value}"
-                        icon = "https://crafthead.net/avatar/${UsernameUtil.getUUID(groups["username"]!!.value)}"
-                    }
+        kord.getChannelOf<MessageChannel>(mcMessage.channel.channel)?.createMessage {
+            embed {
+                color = when(mcMessage.rank) {
+                    "MVP++" -> Color(0xffaa00)
+                    "MVP+" -> Color(0x5555ff)
+                    "MVP" -> Color(0x55ffff)
+                    "VIP+" -> Color(0x00aa00)
+                    "VIP" -> Color(0x55ff55)
+                    else -> Color(0xaaaaaa)
+                }
+                author {
+                    name = "${mcMessage.username}: ${mcMessage.content}"
+                    icon = "https://crafthead.net/avatar/${UsernameUtil.getUUID(mcMessage.username)}"
                 }
             }
         }

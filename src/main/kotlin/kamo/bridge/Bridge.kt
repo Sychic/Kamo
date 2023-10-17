@@ -23,7 +23,10 @@ import dev.zerite.craftlib.protocol.version.ProtocolVersion
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kamo.Kamo
+import kamo.bridge.BridgeModule.guildChannel
+import kamo.bridge.BridgeModule.officerChannel
 import kamo.bridge.auth.*
+import kamo.bridge.util.Channel
 import kamo.bridge.util.DiscordMessage
 import kamo.bridge.util.McMessage
 import kamo.bridge.util.Message
@@ -124,7 +127,16 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
                 if (packet.message.unformattedText.contains(profile.name)) return
                 println(packet.message.unformattedText)
                 BridgeModule.launch {
-                    messageFlow.emit(McMessage(packet.message.unformattedText))
+                    BridgeModule.regex.find(packet.message.unformattedText.replace(BridgeModule.colorRegex, ""))?.groups?.let { groups ->
+                        messageFlow.emit(
+                            McMessage(
+                                if (groups["channel"]?.value == "Officer") Channel.OFFICER else Channel.GUILD,
+                                groups["rank"]?.value,
+                                groups["username"]!!.value,
+                                groups["content"]!!.value
+                            )
+                        )
+                    }
                 }
             }
         }
