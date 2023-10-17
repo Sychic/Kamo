@@ -39,16 +39,20 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:5.7.2")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+tasks {
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+        }
     }
-}
-
-tasks.test {
-    useJUnitPlatform()
-    enabled = false
+    test {
+        useJUnitPlatform()
+        enabled = false
+    }
+    distTar {
+        enabled = false
+    }
 }
 
 application {
