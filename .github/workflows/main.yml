@@ -29,7 +29,6 @@ jobs:
           port: ${{secrets.PORT}}
           localDir: './build/distributions/'
           remoteDir: '/opt/kamo/'
-          exclude: '*.tar'
       - name: Unzip and deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
