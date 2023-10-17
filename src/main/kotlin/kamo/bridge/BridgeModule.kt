@@ -52,7 +52,7 @@ object BridgeModule : Module(), CoroutineScope {
             if (message.author?.isBot == true) return@on
             coroutineScope {
                 launch {
-                    messageFlow.emit(DiscordMessage(message.author!!.effectiveName, message.content))
+                    messageFlow.emit(DiscordMessage(message.getAuthorAsMemberOrNull()!!.effectiveName, message.content))
                 }
             }
         }
