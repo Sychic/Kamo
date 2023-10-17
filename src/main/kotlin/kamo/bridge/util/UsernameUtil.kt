@@ -31,6 +31,6 @@ object UsernameUtil {
                     path("mojang", "v2", "user", username)
                 }
 
-            }.body<JsonObject>()["uuid"]!!.jsonPrimitive.content
+            }.body<JsonObject>()["uuid"]?.jsonPrimitive?.content ?: "063f9bdf047b47ef85b6533ff1dfd69b"
         }
 }
