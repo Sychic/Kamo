@@ -5,10 +5,12 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.entity.channel.MessageChannel
 import dev.kord.core.entity.effectiveName
+import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.message.create.embed
 import io.ktor.http.*
+import kamo.Kamo
 import kamo.bridge.auth.*
 import kamo.bridge.util.DiscordMessage
 import kamo.bridge.util.McMessage
@@ -39,6 +41,7 @@ object BridgeModule : Module(), CoroutineScope {
             field?.let { bridge ->
                 kord.launch {
                     bridge.setup()
+                    kord.getChannelOf<MessageChannel>(guildChannel)?.createMessage { content = "Starting!" }
                     messageFlow.asSharedFlow().filterIsInstance<McMessage>().onEach(::onMessage).launchIn(this + Job())
                 }
             }
@@ -55,6 +58,9 @@ object BridgeModule : Module(), CoroutineScope {
                     messageFlow.emit(DiscordMessage(message.getAuthorAsMemberOrNull()!!.effectiveName, message.content))
                 }
             }
+        }
+        kord.on<DisconnectEvent.DetachEvent> {
+            kord.getChannelOf<MessageChannel>(BridgeModule.guildChannel)?.createMessage { content = "Stopping!" }
         }
         CommandManager.registerCommand(BridgeCommand)
         properties.getProperty("mc")?.let { token ->
