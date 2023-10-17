@@ -5,8 +5,11 @@ import dev.kord.common.entity.Permissions
 import dev.kord.core.behavior.interaction.respondEphemeral
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.behavior.interaction.response.respond
+import dev.kord.core.entity.application.ApplicationCommand
+import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.rest.builder.interaction.GlobalChatInputCreateBuilder
+import kamo.Kamo
 import kamo.bridge.auth.*
 import kamo.commands.Command
 import kamo.properties
@@ -16,12 +19,12 @@ object BridgeCommand : Command() {
     override val name: String = "setup"
     override val desc: String = "sets up bridge"
 
-    context(GlobalChatInputCreateBuilder)
-    override fun setup() {
-        defaultMemberPermissions = Permissions(Permission.Administrator)
-    }
+    override suspend fun setup() =
+        Kamo.client.createGlobalChatInputCommand(name, desc) {
+            defaultMemberPermissions = Permissions(Permission.Administrator)
+        }
 
-    override suspend fun handle(event: GuildChatInputCommandInteractionCreateEvent) {
+    override suspend fun handle(event: ChatInputCommandInteractionCreateEvent) {
         if (BridgeModule.bridge != null) {
             event.interaction.respondEphemeral {
                 content = "Bridge is already set up!"

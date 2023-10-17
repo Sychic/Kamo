@@ -1,14 +1,13 @@
 package kamo.commands
 
-import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
-import dev.kord.rest.builder.interaction.GlobalChatInputCreateBuilder
+import dev.kord.core.entity.application.ChatInputCommandCommand
+import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 
 abstract class Command {
     abstract val name: String
     abstract val desc: String
 
-    context(GlobalChatInputCreateBuilder)
-    abstract fun setup()
+    abstract suspend fun setup(): ChatInputCommandCommand
 
-    abstract suspend fun handle(event: GuildChatInputCommandInteractionCreateEvent)
+    abstract suspend fun handle(event: ChatInputCommandInteractionCreateEvent)
 }

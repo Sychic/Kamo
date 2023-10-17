@@ -1,6 +1,6 @@
 package kamo.commands
 
-import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
+import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
 import kamo.modules.Module
 
@@ -9,13 +9,13 @@ object CommandManager : Module() {
     private val commands = mutableListOf<Command>()
 
     override suspend fun setup() {
-        kord.on<GuildChatInputCommandInteractionCreateEvent> {
+        kord.on<ChatInputCommandInteractionCreateEvent> {
             commands.find { it.name == interaction.invokedCommandName }?.handle(this)
         }
     }
 
     suspend fun registerCommand(command: Command) {
         commands.add(command)
-        kord.createGlobalChatInputCommand(command.name, command.desc, command::setup)
+        command.setup()
     }
 }
