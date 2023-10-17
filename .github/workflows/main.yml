@@ -36,5 +36,5 @@ jobs:
           username: ${{secrets.USERNAME}}
           key: ${{secrets.KEY}}
           script: |
-            unzip /opt/kamo/Kamo-0.0.1.zip -d /opt/kamo/kamo/ -u
+            unzip -u -o /opt/kamo/Kamo-0.0.1.zip -d /opt/kamo/kamo/
             sudo systemctl restart kamo
