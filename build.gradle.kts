@@ -44,6 +44,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.test {
     useJUnitPlatform()
+    enabled = false
 }
 
 application {

@@ -1,24 +1,18 @@
 package kamo
 
+import java.io.FileInputStream
 import java.util.*
 
 
+val properties = Properties().also {
+    it.load(FileInputStream("/opt/kamo/config"))
+}
+
 suspend fun main(args: Array<String>) {
     val scanner = Scanner(System.`in`)
-    Kamo.init(System.getProperty("kamo.token") ?:
-        run {
-            println("Please input token")
-            scanner.nextLine()
-        },
-        System.getProperty("kamo.mongo") ?:
-        run {
-            println("Please input mongo link")
-            scanner.nextLine()
-        },
-        System.getProperty("kamo.api") ?:
-        run {
-            println("Please input hypixel api key")
-            scanner.nextLine()
-        }
+    Kamo.init(
+        properties.getProperty("token"),
+        properties.getProperty("mongo"),
+        properties.getProperty("hypixel")
     )
 }
