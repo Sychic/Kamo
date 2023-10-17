@@ -69,7 +69,7 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
                 BridgeModule.launch {
                     messageFlow.filterIsInstance<DiscordMessage>().onEach { message ->
                         println(message)
-                        connection.send(ClientPlayChatMessagePacket("/gc ࠀ${message.author} > ${message.content.replace("ez", "easy", true)}".take(256)))
+                        connection.send(ClientPlayChatMessagePacket("${message.channel.command} ${message.author} > ${message.content.replace("ez", "easy", true)}".take(256)))
                     }.launchIn(CoroutineScope(BridgeModule.coroutineContext + Job()))
                 }
             }
