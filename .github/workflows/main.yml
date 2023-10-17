@@ -1,0 +1,40 @@
+on: push
+name: Deploy kamo on push
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Git Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        run: chmod +x gradlew; ./gradlew build --stacktrace
+
+      - name: Deploy to server
+        uses: Dylan700/sftp-upload-action@v1.2.0
+        with:
+          server: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.KEY}}
+          port: ${{secrets.PORT}}
+          uploads: |
+            ./build/distributions/ => /opt/kamo/
+      - name: Unzip and deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.KEY}}
+          script: |
+            unzip /opt/kamo/Kamo-0.0.1.zip -d /opt/kamo/kamo/
+            sudo systemctl restart kamo
