@@ -10,6 +10,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.util.UUID
 
 object UsernameUtil {
+    val cache = mutableMapOf<String, String>()
 
     suspend fun getUsername(uuid: String) =
         httpClient.get {
@@ -22,12 +23,14 @@ object UsernameUtil {
         }.body<JsonObject>()["username"]!!.jsonPrimitive.content
 
     suspend fun getUUID(username: String) =
-        httpClient.get {
-            url {
-                protocol = URLProtocol.HTTPS
-                host = "api.ashcon.app"
-                path("mojang", "v2", "user", username)
-            }
+        cache.getOrPut(username) {
+            httpClient.get {
+                url {
+                    protocol = URLProtocol.HTTPS
+                    host = "api.ashcon.app"
+                    path("mojang", "v2", "user", username)
+                }
 
-        }.body<JsonObject>()["uuid"]!!.jsonPrimitive.content
+            }.body<JsonObject>()["uuid"]!!.jsonPrimitive.content
+        }
 }
