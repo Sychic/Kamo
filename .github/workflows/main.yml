@@ -21,14 +21,15 @@ jobs:
         run: chmod +x gradlew; ./gradlew build --stacktrace
 
       - name: Deploy to server
-        uses: Dylan700/sftp-upload-action@v1.2.0
+        uses: wangyucode/sftp-upload-action@v2.0.2
         with:
-          server: ${{secrets.HOST}}
+          host: ${{secrets.HOST}}
           username: ${{secrets.USERNAME}}
-          key: ${{secrets.KEY}}
+          privateKey: ${{secrets.KEY}}
           port: ${{secrets.PORT}}
-          uploads: |
-            ./build/distributions/Kamo-0.0.1.zip => /opt/kamo/
+          localDir: './build/distributions/'
+          remoteDir: '/opt/kamo/'
+          exclude: '*.tar'
       - name: Unzip and deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
