@@ -11,6 +11,8 @@ import dev.kord.gateway.PrivilegedIntent
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
+import kamo.bridge.BridgeModule
+import kamo.commands.CommandManager
 import kamo.modules.Module
 import kamo.modules.impl.JoinModule
 import kamo.modules.impl.VerifyModule
@@ -39,8 +41,10 @@ object Kamo {
         client = Kord(discordToken)
         hylin = client.createHylinAPI(apiKey)
 
-        modules.add(VerifyModule)
+        modules.add(BridgeModule)
+        modules.add(CommandManager)
         modules.add(JoinModule)
+        modules.add(VerifyModule)
 
         modules.forEach {
             it.setup()

@@ -31,6 +31,7 @@ dependencies {
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$mongoKotlinVersion")
     val hylinVersion: String by project
     implementation("com.github.skytils:hylin:$hylinVersion")
+    implementation("com.github.zerite.craftlib:craftlib-protocol:9bd55d28fa")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -39,7 +40,10 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    }
 }
 
 tasks.test {
