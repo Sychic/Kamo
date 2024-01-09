@@ -22,9 +22,11 @@ import dev.zerite.craftlib.protocol.version.MinecraftProtocol
 import dev.zerite.craftlib.protocol.version.ProtocolVersion
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.netty.handler.timeout.ReadTimeoutException
 import kamo.Kamo
 import kamo.bridge.BridgeModule.guildChannel
 import kamo.bridge.BridgeModule.officerChannel
+import kamo.bridge.BridgeModule.restartBridge
 import kamo.bridge.auth.*
 import kamo.bridge.util.Channel
 import kamo.bridge.util.DiscordMessage
@@ -145,6 +147,12 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
     override fun sending(connection: NettyConnection, event: PacketSendingEvent) {
         if (event.packet is ClientPlayChatMessagePacket) {
             println((event.packet as ClientPlayChatMessagePacket).message)
+        }
+    }
+
+    override fun exception(connection: NettyConnection, cause: Throwable) {
+        if (cause is ReadTimeoutException) {
+            restartBridge()
         }
     }
 

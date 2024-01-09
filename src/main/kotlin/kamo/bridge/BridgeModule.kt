@@ -61,25 +61,7 @@ object BridgeModule : Module(), CoroutineScope {
             kord.getChannelOf<MessageChannel>(BridgeModule.guildChannel)?.createMessage { content = "Stopping!" }
         }
         CommandManager.registerCommand(BridgeCommand)
-        properties.getProperty("mc")?.let { token ->
-            if (requestMcProfile(token).status == HttpStatusCode.Unauthorized) {
-                properties.getProperty("refresh")?.let { refreshToken ->
-                    println("attempting to refresh token")
-                    refreshAccessToken(refreshToken)
-                }?.let { authData ->
-                    val xblData = obtainXBLToken(authData.access_token)
-                    val xstsData = obtainXSTSToken(xblData)
-                    val mcTokenData = obtainMCToken(xstsData)
-                    bridge = Bridge(mcTokenData.access_token, messageFlow)
-                    println("saving new access token")
-                    properties.setProperty("mc", mcTokenData.access_token)
-                    properties.store(FileOutputStream("/opt/kamo/config"), null)
-                } ?: run { kord.getChannelOf<MessageChannel>(officerChannel)?.createMessage { content = "unable to refresh account, please use /setup again" } }
-            } else {
-                println("using saved access token")
-                bridge = Bridge(token, messageFlow)
-            }
-        }
+        setupBridge()
     }
 
     suspend fun onMessage(mcMessage: McMessage) {
@@ -97,6 +79,34 @@ object BridgeModule : Module(), CoroutineScope {
                     name = "${mcMessage.username}: ${mcMessage.content}"
                     icon = "https://crafthead.net/avatar/${UsernameUtil.getUUID(mcMessage.username)}"
                 }
+            }
+        }
+    }
+
+    fun restartBridge() =
+        launch {
+            bridge = null
+            setupBridge()
+        }
+
+    private suspend fun setupBridge() {
+        properties.getProperty("mc")?.let { token ->
+            if (requestMcProfile(token).status == HttpStatusCode.Unauthorized) {
+                properties.getProperty("refresh")?.let { refreshToken ->
+                    println("attempting to refresh token")
+                    refreshAccessToken(refreshToken)
+                }?.let { authData ->
+                    val xblData = obtainXBLToken(authData.access_token)
+                    val xstsData = obtainXSTSToken(xblData)
+                    val mcTokenData = obtainMCToken(xstsData)
+                    bridge = Bridge(mcTokenData.access_token, messageFlow)
+                    println("saving new access token")
+                    properties.setProperty("mc", mcTokenData.access_token)
+                    properties.store(FileOutputStream("/opt/kamo/config"), null)
+                } ?: run { kord.getChannelOf<MessageChannel>(officerChannel)?.createMessage { content = "unable to refresh account, please use /setup again" } }
+            } else {
+                println("using saved access token")
+                bridge = Bridge(token, messageFlow)
             }
         }
     }
