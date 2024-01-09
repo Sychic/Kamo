@@ -159,7 +159,7 @@ object VerifyModule : Module() {
     }
 
     @Serializable
-    class Obj(
+    data class Obj(
         val discord: String,
         val uuid: String,
         val alias: String? = null
