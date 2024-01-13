@@ -9,8 +9,8 @@ import dev.kord.core.event.gateway.DisconnectEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import dev.kord.rest.builder.message.create.embed
+import dev.zerite.craftlib.chat.dsl.chat
 import io.ktor.http.*
-import kamo.Kamo
 import kamo.bridge.auth.*
 import kamo.bridge.util.*
 import kamo.commands.CommandManager
@@ -34,6 +34,10 @@ object BridgeModule : Module(), CoroutineScope {
 
     var bridge: Bridge? = null
         set(value) {
+            value?.let { bridge ->
+                bridge.connection?.close(chat { string("Restarting") })
+                bridge.job?.cancel()
+            }
             field = value
             field?.let { bridge ->
                 kord.launch {

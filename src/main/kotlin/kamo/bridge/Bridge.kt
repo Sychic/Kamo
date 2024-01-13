@@ -44,11 +44,13 @@ import kotlin.text.toByteArray
 
 class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): PacketHandler {
     var profile: MCProfileData by Delegates.notNull()
+    var job: Job? = null
+    var connection: NettyConnection? = null
 
     suspend fun setup() {
         profile = getMCProfile(token)
-        val connection = BridgeModule.async {
-            MinecraftProtocol.connect(withContext(Dispatchers.IO) {
+        BridgeModule.launch {
+            connection = MinecraftProtocol.connect(withContext(Dispatchers.IO) {
                 InetAddress.getByName("play.hypixel.net")
             }, 25565) {
                 debug = false
@@ -72,7 +74,7 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
             connection.state = MinecraftProtocol.LOGIN
             connection.send(ClientLoginStartPacket(profile.name)) {
                 BridgeModule.launch {
-                    messageFlow.filterIsInstance<DiscordMessage>().onEach { message ->
+                    job = messageFlow.filterIsInstance<DiscordMessage>().onEach { message ->
                         println(message)
                         connection.send(ClientPlayChatMessagePacket("${message.channel.command} ${message.author} > ${message.content.replace("ez", "easy", true)}".take(256)))
                     }.launchIn(CoroutineScope(BridgeModule.coroutineContext + Job()))
