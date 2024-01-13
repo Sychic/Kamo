@@ -43,7 +43,6 @@ object BridgeModule : Module(), CoroutineScope {
                 kord.launch {
                     bridge.setup()
                     kord.getChannelOf<MessageChannel>(guildChannel)?.createMessage { content = "Starting!" }
-                    messageFlow.asSharedFlow().filterIsInstance<McMessage>().onEach(::onMessage).launchIn(this + SupervisorJob())
                 }
             }
         }
@@ -64,6 +63,7 @@ object BridgeModule : Module(), CoroutineScope {
         kord.on<DisconnectEvent.DetachEvent> {
             kord.getChannelOf<MessageChannel>(BridgeModule.guildChannel)?.createMessage { content = "Stopping!" }
         }
+        messageFlow.asSharedFlow().filterIsInstance<McMessage>().onEach(::onMessage).launchIn(this + SupervisorJob())
         CommandManager.registerCommand(BridgeCommand)
         setupBridge()
     }
