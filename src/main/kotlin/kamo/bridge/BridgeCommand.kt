@@ -2,13 +2,12 @@ package kamo.bridge
 
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
-import dev.kord.core.behavior.interaction.respondEphemeral
+import dev.kord.core.behavior.interaction.response.DeferredMessageInteractionResponseBehavior
 import dev.kord.core.behavior.interaction.response.edit
 import dev.kord.core.behavior.interaction.response.respond
-import dev.kord.core.entity.application.ApplicationCommand
+import dev.kord.core.entity.interaction.SubCommand
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
-import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
-import dev.kord.rest.builder.interaction.GlobalChatInputCreateBuilder
+import dev.kord.rest.builder.interaction.subCommand
 import kamo.Kamo
 import kamo.bridge.auth.*
 import kamo.commands.Command
@@ -16,22 +15,34 @@ import kamo.properties
 import java.io.FileOutputStream
 
 object BridgeCommand : Command() {
-    override val name: String = "setup"
-    override val desc: String = "sets up bridge"
+    override val name: String = "bridge"
+    override val desc: String = "Commands related to bridge"
 
     override suspend fun setup() =
         Kamo.client.createGlobalChatInputCommand(name, desc) {
             defaultMemberPermissions = Permissions(Permission.Administrator)
+            subCommand("setup", "sets up bridge")
+            subCommand("restart", "restarts bridge")
         }
 
     override suspend fun handle(event: ChatInputCommandInteractionCreateEvent) {
+        val response = event.interaction.deferEphemeralResponse()
+        (event.interaction.command as? SubCommand)?.let { subCommand ->
+            when(subCommand.name) {
+                "setup" -> ::handleSetup
+                "restart" -> ::handleRestart
+                else -> return
+            }(response)
+        }
+    }
+
+    suspend fun handleSetup(defer: DeferredMessageInteractionResponseBehavior) {
         if (BridgeModule.bridge != null) {
-            event.interaction.respondEphemeral {
+            defer.respond {
                 content = "Bridge is already set up!"
             }
             return
         }
-        val defer = event.interaction.deferEphemeralResponse()
         val message = defer.respond { content = "Setting up bridge" }
         runCatching {
             properties.getProperty("refresh")?.let { refreshToken ->
@@ -66,5 +77,17 @@ object BridgeCommand : Command() {
             properties.store(FileOutputStream("/opt/kamo/config"), null)
             message.edit { content = "All done!" }
         }
+    }
+
+    suspend fun handleRestart(defer: DeferredMessageInteractionResponseBehavior) {
+        if (BridgeModule.bridge == null) {
+            defer.respond {
+                content = "Bridge is not set up yet!"
+            }
+            return
+        }
+        val message = defer.respond { content = "Restarting bridge" }
+        BridgeModule.restartBridge()
+        message.edit { content = "All done!" }
     }
 }
