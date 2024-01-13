@@ -72,11 +72,11 @@ object BridgeCommand : Command() {
             val xblData = obtainXBLToken(authData.access_token)
             val xstsData = obtainXSTSToken(xblData)
             val mcTokenData = obtainMCToken(xstsData)
-            message.edit { content = "Creating bridge instance." }
-            BridgeModule.bridge = Bridge(mcTokenData.access_token, BridgeModule.messageFlow, (BridgeModule + Job()).coroutineContext)
             message.edit { content = "Saving token." }
             properties.setProperty("mc", mcTokenData.access_token)
             properties.store(FileOutputStream("/opt/kamo/config"), null)
+            message.edit { content = "Creating bridge instance" }
+            BridgeModule.setupBridge()
             message.edit { content = "All done!" }
         }
     }

@@ -93,7 +93,7 @@ object BridgeModule : Module(), CoroutineScope {
             setupBridge()
         }
 
-    private suspend fun setupBridge() {
+    suspend fun setupBridge() {
         properties.getProperty("mc")?.let { token ->
             if (requestMcProfile(token).status == HttpStatusCode.Unauthorized) {
                 properties.getProperty("refresh")?.let { refreshToken ->
