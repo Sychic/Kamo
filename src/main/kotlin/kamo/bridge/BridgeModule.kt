@@ -34,7 +34,7 @@ object BridgeModule : Module(), CoroutineScope {
 
     var bridge: Bridge? = null
         set(value) {
-            value?.let { bridge ->
+            field?.let { bridge ->
                 bridge.connection?.close(chat { string("Restarting") })
                 bridge.job?.cancel()
             }
