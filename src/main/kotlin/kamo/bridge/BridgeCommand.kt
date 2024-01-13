@@ -12,6 +12,8 @@ import kamo.Kamo
 import kamo.bridge.auth.*
 import kamo.commands.Command
 import kamo.properties
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.plus
 import java.io.FileOutputStream
 
 object BridgeCommand : Command() {
@@ -71,7 +73,7 @@ object BridgeCommand : Command() {
             val xstsData = obtainXSTSToken(xblData)
             val mcTokenData = obtainMCToken(xstsData)
             message.edit { content = "Creating bridge instance." }
-            BridgeModule.bridge = Bridge(mcTokenData.access_token, BridgeModule.messageFlow)
+            BridgeModule.bridge = Bridge(mcTokenData.access_token, BridgeModule.messageFlow, (BridgeModule + Job()).coroutineContext)
             message.edit { content = "Saving token." }
             properties.setProperty("mc", mcTokenData.access_token)
             properties.store(FileOutputStream("/opt/kamo/config"), null)

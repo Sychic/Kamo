@@ -36,7 +36,7 @@ object BridgeModule : Module(), CoroutineScope {
         set(value) {
             field?.let { bridge ->
                 bridge.connection?.close(chat { string("Restarting") })
-                bridge.job?.cancel()
+                bridge.cancel()
             }
             field = value
             field?.let { bridge ->
@@ -103,14 +103,14 @@ object BridgeModule : Module(), CoroutineScope {
                     val xblData = obtainXBLToken(authData.access_token)
                     val xstsData = obtainXSTSToken(xblData)
                     val mcTokenData = obtainMCToken(xstsData)
-                    bridge = Bridge(mcTokenData.access_token, messageFlow)
+                    bridge = Bridge(mcTokenData.access_token, messageFlow, (BridgeModule + Job()).coroutineContext)
                     println("saving new access token")
                     properties.setProperty("mc", mcTokenData.access_token)
                     properties.store(FileOutputStream("/opt/kamo/config"), null)
                 } ?: run { kord.getChannelOf<MessageChannel>(officerChannel)?.createMessage { content = "unable to refresh account, please use /setup again" } }
             } else {
                 println("using saved access token")
-                bridge = Bridge(token, messageFlow)
+                bridge = Bridge(token, messageFlow, (BridgeModule + Job()).coroutineContext)
             }
         }
     }

@@ -39,25 +39,28 @@ import java.net.InetAddress
 import java.security.MessageDigest
 import java.security.PublicKey
 import javax.crypto.SecretKey
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 import kotlin.text.toByteArray
 
-class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): PacketHandler {
+class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>,
+             override val coroutineContext: CoroutineContext): PacketHandler, CoroutineScope {
     var profile: MCProfileData by Delegates.notNull()
-    var job: Job? = null
     var connection: NettyConnection? = null
 
     suspend fun setup() {
-        profile = getMCProfile(token)
-        BridgeModule.launch {
-            connection = MinecraftProtocol.connect(withContext(Dispatchers.IO) {
-                InetAddress.getByName("play.hypixel.net")
-            }, 25565) {
-                debug = false
-                handler = this@Bridge
+        coroutineScope {
+            profile = getMCProfile(token)
+            launch {
+                connection = MinecraftProtocol.connect(withContext(Dispatchers.IO) {
+                    InetAddress.getByName("play.hypixel.net")
+                }, 25565) {
+                    debug = false
+                    handler = this@Bridge
+                }
             }
+            println("set up bridge")
         }
-        println("set up bridge")
     }
 
     override fun connected(connection: NettyConnection) {
@@ -73,11 +76,11 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
         ) {
             connection.state = MinecraftProtocol.LOGIN
             connection.send(ClientLoginStartPacket(profile.name)) {
-                BridgeModule.launch {
-                    job = messageFlow.filterIsInstance<DiscordMessage>().onEach { message ->
+                launch {
+                    messageFlow.filterIsInstance<DiscordMessage>().onEach { message ->
                         println(message)
                         connection.send(ClientPlayChatMessagePacket("${message.channel.command} ${message.author} > ${message.content.replace("ez", "easy", true)}".take(256)))
-                    }.launchIn(CoroutineScope(BridgeModule.coroutineContext + Job()))
+                    }.launchIn(this)
                 }
             }
         }
@@ -87,7 +90,7 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
         when(packet) {
             is ServerLoginEncryptionRequestPacket -> {
                 val secretKey = Crypto.newSecretKey()
-                BridgeModule.launch {
+                launch {
                     val serverId = getServerId(packet.serverId, packet.publicKey, secretKey)
                     Kamo.httpClient.post {
                         url {
@@ -130,7 +133,7 @@ class Bridge(val token: String, val messageFlow: MutableSharedFlow<Message>): Pa
             is ServerPlayChatMessagePacket -> {
                 if (packet.message.unformattedText.contains(profile.name)) return
                 println(packet.message.unformattedText)
-                BridgeModule.launch {
+                launch {
                     BridgeModule.regex.find(packet.message.unformattedText.replace(BridgeModule.colorRegex, ""))?.groups?.let { groups ->
                         messageFlow.emit(
                             McMessage(
