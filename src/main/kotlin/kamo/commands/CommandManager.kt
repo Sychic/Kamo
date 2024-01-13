@@ -10,7 +10,7 @@ object CommandManager : Module() {
 
     override suspend fun setup() {
         kord.on<ChatInputCommandInteractionCreateEvent> {
-            commands.find { it.name == interaction.invokedCommandName }?.handle(this)
+            commands.find { it.name == interaction.command.rootName }?.handle(this)
         }
     }
 
