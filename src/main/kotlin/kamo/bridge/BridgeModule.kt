@@ -79,9 +79,13 @@ object BridgeModule : Module(), CoroutineScope {
                     "VIP" -> Color(0x55ff55)
                     else -> Color(0xaaaaaa)
                 }
+                val authorStr = "${mcMessage.username}${if(mcMessage.content.length < 256) ": ${mcMessage.content}" else ""}"
                 author {
-                    name = "${mcMessage.username}: ${mcMessage.content}"
+                    name = authorStr
                     icon = "https://crafthead.net/avatar/${UsernameUtil.getUUID(mcMessage.username)}"
+                }
+                if (mcMessage.content.length >= 256) {
+                    description = mcMessage.content
                 }
             }
         }
